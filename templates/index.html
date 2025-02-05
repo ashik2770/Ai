@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chatbot</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #1a1a1a; color: #fff; padding: 20px; }
+        .chat-container { max-width: 600px; margin: auto; background: #333; padding: 20px; border-radius: 10px; }
+        .message { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .user { background: #4CAF50; text-align: right; }
+        .bot { background: #2196F3; text-align: left; }
+        input[type="text"] { width: 80%; padding: 10px; border: none; border-radius: 5px; }
+        button { padding: 10px 20px; background: #f44336; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="chat-container" id="chat-container">
+        <h2>AI Chatbot</h2>
+        <div id="chat-box"></div>
+        <input type="text" id="user-input" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        function sendMessage() {
+            const userInput = document.getElementById("user-input").value;
+            if (userInput.trim() === "") return;
+
+            const chatBox = document.getElementById("chat-box");
+            chatBox.innerHTML += `<div class='message user'>${userInput}</div>`;
+
+            fetch("/get", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: userInput })
+            })
+            .then(response => response.json())
+            .then(data => {
+                chatBox.innerHTML += `<div class='message bot'>${data.response}</div>`;
+                document.getElementById("user-input").value = "";
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
+        }
+    </script>
+</body>
+</html>
